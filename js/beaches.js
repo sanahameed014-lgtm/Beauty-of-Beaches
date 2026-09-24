@@ -24,11 +24,22 @@
 
  
   function getImageSource(src, prefix) {
-    var value = String(src || '');
-    if (/^(?:https?:)?\/\//i.test(value) || value.indexOf('data:') === 0) return value;
-    if (value.charAt(0) === '/') return encodeURI(value);
+    var value = String(src || '').trim();
+
+    if (/^(?:https?:)?\/\//i.test(value) || value.indexOf('data:') === 0) {
+      return value;
+    }
+  
+    if (value.charAt(0) === '/') {
+      return encodeURI(value);
+    }
+  
+    // Remove ../ from JSON path first
+    value = value.replace(/^(\.\.\/)+/, '');
+  
     return (prefix || '') + encodeURI(value);
   }
+ 
 
   function beachDetailsHTML(b) {
     var details = b.details || {};
