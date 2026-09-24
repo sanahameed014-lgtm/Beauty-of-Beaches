@@ -1,0 +1,443 @@
+
+/* ---------- 17. Scroll reveals ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px) scale(.995);
+  transform-origin: center bottom;
+  transition: opacity .5s var(--ease-depth), transform .5s var(--ease-depth);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible { transition-delay: 0s !important; will-change: auto; }
+.reveal.is-visible, .reveal.is-visible.reveal { opacity: 1; transform: none; }
+
+.row > [class*="col-"].reveal:not(.is-visible):nth-child(odd),
+.row > [class*="col-"] > .reveal:not(.is-visible):nth-child(odd) { transform: translate3d(-12px, 16px, 0); }
+.row > [class*="col-"].reveal:not(.is-visible):nth-child(even),
+.row > [class*="col-"] > .reveal:not(.is-visible):nth-child(even) { transform: translate3d(12px, 16px, 0); }
+.reveal.is-visible { transform: none; }
+
+.row > [class*="col-"]:nth-child(2) > .reveal,
+.row > [class*="col-"].reveal:nth-child(2) { transition-delay: .04s; }
+.row > [class*="col-"]:nth-child(3) > .reveal,
+.row > [class*="col-"].reveal:nth-child(3) { transition-delay: .08s; }
+.row > [class*="col-"]:nth-child(4) > .reveal,
+.row > [class*="col-"].reveal:nth-child(4) { transition-delay: .12s; }
+.row > [class*="col-"]:nth-child(5) > .reveal,
+.row > [class*="col-"].reveal:nth-child(5) { transition-delay: .16s; }
+.row > [class*="col-"]:nth-child(6) > .reveal,
+.row > [class*="col-"].reveal:nth-child(6) { transition-delay: .2s; }
+
+/* blocks that carry no reveal class at all (sitemap cards, FAQ, form panels) */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .map-card, .zone-link, .faq-item, .form-panel, .query-form, .map-panel {
+      animation: driftIn .95s var(--ease-depth) backwards;
+      animation-range: entry 2% entry 36%;
+      animation-timeline: view();
+    }
+    @keyframes driftIn {
+      from { opacity: 0; transform: translate3d(-28px, 24px, 0) rotateY(4deg) scale(.985); }
+      to { opacity: 1; transform: none; }
+    }
+  }
+}
+
+/* gallery page has its own direction vocabulary (js/gallery.js) */
+.gallery-reveal--up { transform: translateY(30px) scale(.98); }
+.gallery-reveal--down { transform: translateY(-30px) scale(.98); }
+.gallery-reveal--left { transform: translateX(-36px); }
+.gallery-reveal--right { transform: translateX(36px); }
+.gallery-reveal--scale { transform: scale(.9); }
+.gallery-card--revealed, .gallery-card--revealed[class*="gallery-reveal--"] { transform: none; }
+
+
+/* ---------- 18. 3D tilt (js/motion.js writes --rx / --ry / --tx) ---------- */
+[data-tilt] { transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0); }
+.beach-card, .travel-card, .video-card, .map-card { --rx: 0deg; --ry: 0deg; }
+.tilt-shell { perspective: 1100px; }
+
+/* card face lifts off its own backing sheet on hover */
+.beach-card:hover { transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-10px); }
+/* zone cards flip (style.css section 17) instead of tilting */
+.travel-card:hover { transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-10px); }
+.video-card:hover { transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-10px); }
+.map-card:hover { transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-8px); }
+
+/* specular sweep that follows the pointer across a card face */
+.beach-card::before, .travel-card::before, .zone-card::before {
+  background: var(--sheen);
+  content: "";
+  height: 100%;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transition: opacity .5s ease;
+  width: 100%;
+  z-index: 4;
+}
+.travel-card::before { z-index: 0; }
+.beach-card:hover::before, .zone-card:hover::before { opacity: 1; }
+
+/* ---------- 19. Ambient bands: tide lines breathe at section seams ---------- */
+.section-mint::before, .section-white::before {
+  background: linear-gradient(90deg, transparent, rgba(116, 199, 211, .34), transparent);
+  content: "";
+  height: 1px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.section-mint > .container { position: relative; z-index: 1; }
+
+/* floating bubbles (contact + queries pages) */
+@keyframes bubbleRise {
+  0% { opacity: 0; transform: translate3d(0, 40px, 0) scale(.6); }
+  20% { opacity: .75; }
+  100% { opacity: 0; transform: translate3d(var(--drift, 18px), -190px, 0) scale(1.15); }
+}
+
+/* subtle depth for hero CTAs and panels */
+.download-panel { transform: perspective(1200px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }
+
+/* ---------- 20. Responsive guards ---------- */
+@media (max-width: 1199.98px) {
+  .zone-link { min-height: 128px; }
+}
+@media (max-width: 991.98px) {
+  :root { --nav-h: 72px; }
+  .hero { height: min(calc(100vh - var(--nav-h)), 680px); min-height: 520px; }
+  .hero-ctas { flex-direction: column; align-items: center; }
+  .hero-ctas .btn-wave, .hero-ctas .btn-glass { max-width: 330px; width: 100%; }
+  .zone-card { height: 300px; }
+  .zone-grid { grid-template-columns: repeat(2, 1fr); }
+  .download-panel { text-align: center; }
+  .download-panel .d-lg-flex, .download-panel .justify-content-lg-end { justify-content: center !important; }
+  .beach-card-hover-overlay { padding: 20px; }
+  .os-globe { height: 300px; width: 300px; }
+}
+@media (max-width: 767.98px) {
+  .page-home .row > [class*="col-"].reveal:not(.is-visible):nth-child(odd)  { transform: translate3d(-16px, 20px, 0); }
+  .page-home .row > [class*="col-"].reveal:not(.is-visible):nth-child(even) { transform: translate3d(16px, 20px, 0); }
+  .page-about .row > [class*="col-"].reveal:not(.is-visible):nth-child(1) { transform: translate3d(-16px, 12px, 0); }
+  .page-about .row > [class*="col-"].reveal:not(.is-visible):nth-child(3) { transform: translate3d(16px, 12px, 0); }
+  .page-sitemap .reveal:not(.is-visible), .page-queries .reveal:not(.is-visible),
+  .page-feedback .reveal:not(.is-visible), .page-contact .reveal:not(.is-visible) {
+    transform: perspective(1200px) rotateY(-5deg) translate3d(14px, 16px, 0); }
+}
+@media (max-width: 767.98px) {
+  body { padding-top: var(--nav-h); }
+  .section { padding: 58px 0; }
+  .hero { min-height: 500px; }
+  .hero-badge { height: 74px; width: 74px; }
+  .scroll-indicator { bottom: 18px; gap: 0; }
+  .scroll-indicator .scroll-line { display: none; }
+  .hero-desc { font-size: .94rem; margin-bottom: 26px; }
+  .page-banner { height: clamp(230px, 34vh, 300px); }
+  .floating-logo { display: none; }
+  .back-to-top { height: 42px; width: 42px; right: 14px; }
+  .zone-card-overlay p { margin-bottom: 14px; max-height: 60px; opacity: 1; }
+  .gallery-item { height: 210px; }
+  .footer-top { padding-top: 36px; }
+  .row > [class*="col-"] > .reveal { transition-delay: 0s; }
+}
+@media (min-width: 768px) and (max-height: 860px) {
+  .hero-badge { height: 62px; margin-bottom: 12px; width: 62px; }
+  .wave-text { font-size: clamp(2rem, 4.6vw, 3rem); }
+  .hero-heading { font-size: clamp(1.05rem, 2vw, 1.4rem); margin-bottom: 10px; }
+  .hero-desc { font-size: .92rem; margin-bottom: 22px; }
+  .scroll-indicator { bottom: 12px; gap: 6px; }
+}
+@media (min-width: 768px) and (max-height: 640px) {
+  .scroll-indicator .scroll-line { display: none; }
+}
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .scroll-indicator { bottom: 10px; gap: 4px; }
+}
+@media (max-width: 340px) {
+  .scroll-indicator { display: none; }
+}
+@media (max-width: 575.98px) {
+  .brand-name { font-size: 1.28rem; }
+  .navbar-brand { gap: 9px; }
+  .brand-logo { flex: 0 0 38px; height: 38px; width: 38px; }
+  .navbar-waves { width: 104px; }
+  .visitor-counter { font-size: .68rem; }
+  .zone-card { height: 262px; }
+  .zone-grid { grid-template-columns: 1fr; }
+  .beach-card-img img { aspect-ratio: 16 / 10; }
+  .download-panel { padding: 26px 18px; border-radius: var(--radius-lg); }
+  .download-panel .btn-wave, .download-panel .btn-glass { width: 100%; }
+  .btn-wave, .btn-glass { padding: 13px 22px; font-size: .86rem; }
+  .map-card { min-height: 0; padding: 20px; }
+}
+@media (hover: none) and (pointer: coarse) {
+  .custom-cursor, .cursor-ring, .cursor-ripple { display: none; }
+  .beach-card:hover, .zone-card:hover, .travel-card:hover, .video-card:hover, .map-card:hover {
+    transform: translateY(-4px);
+  }
+  html, html * { cursor: auto !important; }
+}
+body::before {
+  animation: pageDrift 64s ease-in-out infinite alternate;
+  background: var(--page-bg, url("../images/beach-hero.jpg")) center / cover no-repeat;
+  backface-visibility: hidden;
+  bottom: -6%;
+  left: -6%;
+  opacity: .34;
+  position: fixed;
+  right: -6%;
+  top: -6%;
+  z-index: -2;
+}
+body::after { 
+  background:
+    linear-gradient(180deg, rgba(242, 250, 248, .82), rgba(242, 250, 248, .93)),
+    radial-gradient(70% 50% at 85% 0%, rgba(116, 199, 211, .18), transparent 60%);
+  bottom: 0;
+  content: "";
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: -1;
+}
+@keyframes pageDrift {
+  from { transform: scale(1.04) translate3d(-1.4%, -1%, 0); }
+  to { transform: scale(1.14) translate3d(1.6%, 1.2%, 0); }
+}
+.page-home     { --page-bg: url("../images/beach-hero.jpg"); }
+.page-about    { --page-bg: url("../images/sea4.jpg"); }
+.page-gallery  { --page-bg: url("../images/gallery1.avif"); }
+.page-feedback { --page-bg: url("../images/feedback.jpg"); }
+.page-queries  { --page-bg: url("../images/sea11.jpg"); }
+.page-contact  { --page-bg: url("../images/sea12.jpg"); }
+.page-sitemap  { --page-bg: url("../images/beaches-3.jpg"); }
+.page-zone     { --page-bg: url("../images/sea6.avif"); }
+
+/* the surfaces have to let that light through */
+.section-white { background: rgba(255, 255, 255, .8); }
+.section-mint {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 22%),
+    rgba(184, 227, 213, .8);
+}
+.sky-band { background: radial-gradient(90% 120% at 12% 0%, rgba(116, 199, 211, .3), transparent 58%), linear-gradient(180deg, rgba(255, 255, 255, .72), rgba(184, 227, 213, .85)); }
+.feedback-layout .form-panel, .query-form, .map-card, .about-card { background-color: rgba(255, 255, 255, .93); }
+
+.section, .page-banner, .footer-beach, .sitemap-intro, .gallery-section { overflow-x: clip; }
+/* home: the columns glide in from the outer edges towards the centre */
+.page-home .row > [class*="col-"].reveal:not(.is-visible):nth-child(odd)  { transform: translate3d(-44px, 18px, 0) rotateY(6deg); }
+.page-home .row > [class*="col-"].reveal:not(.is-visible):nth-child(even) { transform: translate3d(44px, 18px, 0) rotateY(-6deg); }
+/* zone pages: cards rise out of the water, tipping forward */
+.page-zone .reveal:not(.is-visible) { transform: translate3d(0, 46px, 0) rotateX(-10deg); }
+/* about: alternating slide with a slight turn */
+.page-about .row > [class*="col-"].reveal:not(.is-visible):nth-child(1) { transform: translate3d(-40px, 10px, 0) rotate(-1.4deg); }
+.page-about .row > [class*="col-"].reveal:not(.is-visible):nth-child(2) { transform: translate3d(0, 34px, 0) scale(.97); }
+.page-about .row > [class*="col-"].reveal:not(.is-visible):nth-child(3) { transform: translate3d(40px, 10px, 0) rotate(1.4deg); }
+/* sitemap + forms: open like a door on its hinge */
+.page-sitemap .reveal:not(.is-visible),
+.page-queries .reveal:not(.is-visible),
+.page-feedback .reveal:not(.is-visible),
+.page-contact .reveal:not(.is-visible) { transform: perspective(1200px) rotateY(-9deg) translate3d(30px, 14px, 0); }
+
+/* ---------- 24. Hero: the name sails in from the side ---------- */
+@keyframes nameIn {
+  from { opacity: 0; transform: translate3d(-64px, 14px, 0) rotate(-2deg); letter-spacing: .08em; }
+  to   { opacity: 1; transform: none; letter-spacing: normal; }
+}
+.wave-text {
+  /* shimmer + a one-off entrance, on two axes that never fight */
+  animation: waveMove 7s linear infinite, nameIn 1.1s var(--ease-depth) both;
+}
+.hero-title-line { display: block; }
+body.is-scrolling .hero-overlay::after,
+body.is-scrolling .page-banner::before,
+body.is-scrolling .page-banner > img,
+body.is-scrolling .wave-text,
+body.is-scrolling .body-bg,
+body.is-scrolling body::before,
+body.is-scrolling .footer-beach::before,
+body.is-scrolling .wave-band svg { animation-play-state: paused; }
+/* no blur on the fixed picture on touch: it is the priciest thing on the page */
+@media (hover: none) and (pointer: coarse) {
+  .contact-glass-card { backdrop-filter: none; }
+  .hero-overlay::after { filter: blur(6px); opacity: .5; }
+  .hero-overlay { backdrop-filter: none; }
+  .sky-band .os-globe { display: none; }
+}
+@keyframes glossSweep {
+  0% { opacity: 0; transform: translateX(-175%) skewX(-14deg); }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(175%) skewX(-14deg); }
+}
+.beach-card::before, .travel-card::before, .video-card::before, .gallery-item::before,
+.map-card::before, .gallery-card::before, .zone-link::before, .zone-face-front::before,
+.form-panel::before, .map-panel::before, .query-form::before, .comment-card::before,
+.download-panel::before, .footer-top::before {
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0) 16%, rgba(255, 255, 255, .34) 40%,
+              rgba(184, 227, 213, .34) 52%, rgba(255, 255, 255, 0) 82%);
+  content: "";
+  height: 100%;
+  left: -48%;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform: translateX(-175%) skewX(-14deg);
+  width: 48%;
+  will-change: transform, opacity;
+}
+.map-card, .gallery-card, .zone-link, .zone-face-front, .form-panel, .map-panel,
+.query-form, .footer-top { overflow: hidden; position: relative; }
+.beach-card::before { z-index: 2; }
+.video-card::before, .gallery-item::before, .gallery-card::before, .zone-link::before,
+.zone-face-front::before { z-index: 1; }
+.map-card::before, .form-panel::before, .map-panel::before, .query-form::before,
+.comment-card::before { z-index: 0; }
+.travel-card::before, .about-card::before { z-index: 2; } 
+.about-card h3, .about-card p, .about-card .travel-icon, .about-card .divider-mint { z-index: 3; position: relative; }
+.download-panel::before { z-index: 1; }
+.footer-top::before { z-index: 0; } 
+.zone-card-badge { z-index: 3; }
+.beach-card:hover::before, .beach-card:focus-within::before,
+.travel-card:hover::before, .travel-card:focus-within::before,
+.video-card:hover::before, .video-card:focus-within::before,
+.gallery-item:hover::before, .gallery-item:focus-within::before,
+.map-card:hover::before, .map-card:focus-within::before,
+.gallery-card:hover::before, .gallery-card:focus-within::before,
+.zone-link:hover::before, .zone-link:focus::before,
+.zone-card:hover .zone-face-front::before, .zone-card:focus-within .zone-face-front::before,
+.form-panel:hover::before, .form-panel:focus-within::before,
+.map-panel:hover::before, .query-form:hover::before, .query-form:focus-within::before,
+.comment-card:hover::before, .download-panel:hover::before, .download-panel:focus-within::before,
+.footer-beach:hover .footer-top::before { animation: glossSweep 1.15s var(--ease-smooth); }
+/* the PDF band and the footer are wide: give them a longer, softer pass */
+.download-panel::before { left: -64%; width: 64%; }
+.download-panel:hover::before { animation-duration: 1.6s; }
+.footer-top::before { left: -34%; width: 34%; }
+.footer-beach:hover .footer-top::before { animation-duration: 2.2s; }
+
+/* touch has no hover: the tap gives the same pass instead */
+@media (hover: none) and (pointer: coarse) {
+  .zone-card:active .zone-face-front::before, .beach-card:active::before,
+  .video-card:active::before, .gallery-card:active::before, .map-card:active::before,
+  .download-panel:active::before, .footer-beach:active .footer-top::before {
+    animation: glossSweep 1.15s var(--ease-smooth);
+  }
+}
+/* reduced motion: a still gloss highlight, no travel */
+@media (prefers-reduced-motion: reduce) {
+  .beach-card::before, .travel-card::before, .video-card::before, .gallery-item::before,
+  .map-card::before, .gallery-card::before, .zone-link::before, .zone-face-front::before,
+  .form-panel::before, .map-panel::before, .query-form::before, .comment-card::before,
+  .download-panel::before, .footer-top::before, .fw { animation: none !important; will-change: auto; }
+  .beach-card:hover::before, .map-card:hover::before, .gallery-card:hover::before,
+  .zone-card:hover .zone-face-front::before, .download-panel:hover::before,
+  .footer-beach:hover .footer-top::before {
+    opacity: .55; transform: translateX(26%) skewX(-14deg);
+  }
+}
+
+/* ---------- 25b. Wave field motion: three swells, three speeds ---------- */
+@keyframes bandBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes waveFieldA { from { transform: translate3d(0, -8px, 0); } to { transform: translate3d(-50%, 8px, 0); } }
+@keyframes waveFieldB { from { transform: translate3d(-50%, 6px, 0); } to { transform: translate3d(0, -10px, 0); } }
+@keyframes waveFieldC { from { transform: translate3d(0, 10px, 0); } to { transform: translate3d(-50%, -12px, 0); } }
+.pw-a { animation: waveFieldA 46s linear infinite; }
+.pw-b { animation: waveFieldB 32s linear infinite; }
+.pw-c { animation: waveFieldC 24s linear infinite; }
+.page-gallery .pw, .page-home .pw { opacity: .3; }
+.page-gallery .pw-a, .page-home .pw-a { animation-duration: 34s; }
+body.is-scrolling .pw { animation-play-state: paused; }
+.wave-band { animation: bandBob 7s ease-in-out infinite; }
+@media (max-width: 767.98px) {
+  .page-waves { opacity: .8; }
+  .pw-b { display: none; }
+  .pw-a { animation-duration: 52s; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pw { animation: none !important; transform: none !important; }
+  .page-waves { opacity: .8; }
+}
+
+/* ---------- 26. Storm keyframes: the lightning never stops ---------- */
+@keyframes tileFloat {
+  from { transform: translate3d(0, 0, 0) rotateY(0deg) rotateX(0deg); }
+  to { transform: translate3d(0, -5px, 26px) rotateY(-16deg) rotateX(8deg); }
+}
+@keyframes contactSea {
+  from { background-position: center, 46% 50%; }
+  to   { background-position: center, 54% 56%; }
+}
+@keyframes ledgeFloat {
+  from { transform: translate3d(0, 4px, calc(var(--z, 0px) - 20px)) rotateX(2.6deg) rotateY(-3deg); }
+  to   { transform: translate3d(0, -10px, calc(var(--z, 0px) + 28px)) rotateX(-2.6deg) rotateY(3deg); }
+}
+/* footer crests: a long slow lap; ledges float as they did before */
+@keyframes footerLap { to { transform: translateX(-50%); } }
+@keyframes ledgeBreathe {
+  from { transform: translate3d(0, 2px, calc(var(--z, 0px) - 8px)) rotateX(1.2deg) rotateY(-1.2deg); }
+  to   { transform: translate3d(0, -4px, calc(var(--z, 0px) + 10px)) rotateX(-1.2deg) rotateY(1.2deg); }
+}
+body.is-scrolling .section-sea::after,
+body.is-scrolling .page-contact .beach-contact-section,
+body.is-scrolling .fw,
+body.is-scrolling .social-icon,
+body.is-scrolling .footer-top > .row > [class*="col-"] { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  /* the water simply rests: one still crest, no lapping, no breathing ledges */
+  .fw, .fw-2, .fw-3, .footer-top > .row > [class*="col-"], .social-icon { animation: none !important; transform: none; }
+  .page-contact .beach-contact-section { animation: none !important; }
+  .fw-2, .fw-3 { display: none; }
+  .fw-1 { opacity: .09; transform: none; }
+  .footer-beach h5, .footer-brand-row .brand-name { text-shadow: 0 0 8px rgba(116, 199, 211, .3); }
+}
+
+
+/* ---------- 27. About photos: slide in from the side they sit on ---------- */
+@keyframes frameGlint {
+  0% { opacity: 0; transform: translateX(0) skewX(-14deg); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(320%) skewX(-14deg); }
+}
+.page-about .about-frame {
+  opacity: 0;
+  transition: opacity .8s var(--ease-depth), transform .95s var(--ease-depth);
+}
+.page-about .is-from-left  { transform: translate3d(-72px, 14px, 0) rotate(-2deg); }
+.page-about .is-from-right { transform: translate3d(72px, 14px, 0) rotate(2deg); }
+.page-about .reveal.is-visible .about-frame { opacity: 1; transform: none; }
+.page-about .reveal.is-visible .about-frame:hover,
+.page-about .reveal.is-visible .about-frame:focus-within { transform: translateY(-8px); }
+@media (max-width: 991.98px) {
+  /* stacked: the slide reads as a rise instead */
+  .page-about .is-from-left, .page-about .is-from-right { transform: translate3d(0, 44px, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-about .about-frame { opacity: 1; transform: none; }
+  .about-frame__glint, .about-photo, .about-frame { animation: none !important; transition: none !important; }
+}
+
+/* ---------- 21. Reduced motion: the site still reads, it just stops moving ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  .reveal, [class*="gallery-reveal--"] { opacity: 1 !important; transform: none !important; }
+  body::before { animation: none; filter: blur(1px); }
+  .wave-text { animation: none; opacity: 1; }
+  .page-banner > img { animation: none; transform: scale(1.02); }
+  .page-banner::before, .footer-beach::before, .footer-beach::after, .wave-band svg,
+  .section-sea::after, .fw { animation: none; }
+  .hero-heading, .hero-desc, .hero-ctas, .hero-badge { opacity: 1; }
+  .hero-media, .page-banner > img { transform: none !important; }
+  .floating-logo { animation: none; }
+}

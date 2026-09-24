@@ -1,0 +1,83 @@
+
+.page-home     { --page-bg: url("../images/beautiful_1203-2633.avif"); }
+.page-about    { --page-bg: url("../images/image20.png"); }
+.page-feedback { --page-bg: url("../images/sea7.avif"); }
+.page-queries  { --page-bg: url("../images/sea5.jpg"); }
+.page-contact  { --page-bg: url("../images/sea12.jpg"); }
+.page-sitemap  { --page-bg: url("../images/sea4.jpg"); }
+body.page-zone[data-zone="east"]  { --page-bg: url("../images/sea6.avif"); }
+body.page-zone[data-zone="west"]  { --page-bg: url("../images/gallery1.avif"); }
+body.page-zone[data-zone="north"] { --page-bg: url("../images/sea11.jpg"); }
+body.page-zone[data-zone="south"] { --page-bg: url("../images/image9.png"); }
+
+
+@keyframes shoreDrift {
+  from { transform: scale(1.04) translate3d(-4.6%, -2.8%, 0); }
+  to   { transform: scale(1.16) translate3d(4.6%, 3.0%, 0); }
+}
+body::before {
+  content: "" !important;
+  background: var(--page-bg, url("../images/beach-hero.jpg")) center / cover no-repeat !important;
+  animation: shoreDrift 22s ease-in-out infinite alternate !important;
+  opacity: 1 !important;
+  z-index: -3 !important;
+  will-change: transform;
+}
+body.is-scrolling::before { animation-play-state: running !important; }
+/* one soft wash over it so copy and cards stay readable — page-wide, not per band */
+body::after {
+  background:
+    linear-gradient(180deg, rgba(242, 250, 248, .53), rgba(242, 250, 248, .59) 50%, rgba(242, 250, 248, .55)),
+    radial-gradient(70% 50% at 85% 0%, rgba(116, 199, 211, .12), transparent 60%) !important;
+  z-index: -2 !important;
+}
+
+/* ---------- 2. Kill the per-section photographs ---------- */
+.section-sea::after,
+.section-white:not(.section-sea)::after,
+.section-white:nth-of-type(even):not(.section-sea)::after,
+.comments-section::before,
+.comments-section::after,
+.beach-faq-section::before,
+.beach-faq-section::after,
+.gallery-section::before,
+.gallery-section::after {
+  animation: none !important;
+  background: none !important;
+  content: none !important;
+  display: none !important;
+}
+
+/* every band is fully see-through: one scene, no seams, no band switches */
+.section,
+.section-white,
+.section-mint,
+.sky-band,
+.section-sea,
+.gallery-section,
+.comments-section,
+.beach-faq-section,
+.query-section,
+.quote-band,
+.sitemap-intro,
+.zone-section,
+body.page-contact .beach-contact-section {
+  background: transparent !important;
+  background-image: none !important;
+}
+.section > .container, .section-sea > .container { position: relative; z-index: 2; }
+.page-banner { background: transparent !important; }
+.page-banner::after {
+  background: linear-gradient(180deg, rgba(8, 32, 36, .72), rgba(11, 110, 105, .78)) !important;
+}
+
+body.page-gallery { background: #74C7D3 !important; }
+.page-gallery { --page-bg: none; }
+body.page-gallery::before,
+body.page-gallery::after { content: none !important; display: none !important; }
+body.page-gallery .page-waves { display: none !important; }
+body.page-gallery .gallery-section { background: transparent !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  body::before { animation: none !important; }
+}

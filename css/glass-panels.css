@@ -1,0 +1,172 @@
+/* ---------- 1. The panels are glass, not paper ---------- */
+.feedback-layout .form-panel, .query-form {
+  background: linear-gradient(165deg, rgba(255, 255, 255, .34), rgba(242, 250, 248, .18));
+  backdrop-filter: blur(16px) saturate(1.18);
+  -webkit-backdrop-filter: blur(16px) saturate(1.18);
+  border: 1px solid rgba(255, 255, 255, .62);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 30px 60px -28px rgba(4, 42, 47, .5), inset 0 1px 0 rgba(255, 255, 255, .85),
+              0 0 44px -14px rgba(116, 199, 211, .45);
+  color: var(--dark);
+  overflow: hidden;
+  position: relative;
+  z-index: 0;
+}
+/* the old opaque veil that made the panel look flat */
+.feedback-layout .form-panel::before { display: none; }
+.beach-faq-section::before, .beach-faq-section::after { z-index: 0; }
+.feedback-layout .form-panel > *:not(.panel-sea),
+.query-form > *:not(.panel-sea) { position: relative; z-index: 2; }
+
+/* ---------- 2. Water living inside the panel ---------- */
+.panel-sea { inset: 0; overflow: hidden; pointer-events: none; position: absolute; z-index: 1; }
+.panel-sea img {
+  animation: panelSeaMove 24s ease-in-out infinite alternate;
+  filter: saturate(1.05) brightness(1.04);
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  opacity: .5;
+  width: 100%;
+}
+@keyframes panelSeaMove {
+  from { transform: scale(1.06) translate3d(-2%, -1%, 0); }
+  to   { transform: scale(1.2) translate3d(2.5%, 1.5%, 0); }
+}
+/* three crests on tilted planes: that tilt is what makes the water read as 3D */
+.ps-wave {
+  bottom: -12%;
+  height: 46%;
+  left: -25%;
+  position: absolute;
+  width: 150%;
+  will-change: transform;
+}
+.ps-wave path { fill: var(--light-blue); }
+.ps-wave-1 { opacity: .34; animation: waveSurge1 13s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+.ps-wave-2 { opacity: .30; animation: waveSurge2 9s ease-in-out infinite alternate; }
+.ps-wave-2 path { fill: var(--secondary); }
+.ps-wave-3 { opacity: .26; animation: waveSurge3 16s ease-in-out infinite alternate; }
+.ps-wave-3 path { fill: var(--mint); }
+@keyframes waveSurge1 {
+  from { transform: perspective(700px) rotateX(26deg) translate3d(-4%, 6px, 0) scale(1.04); }
+  to   { transform: perspective(700px) rotateX(18deg) translate3d(4%, -8px, 0) scale(1.1); }
+}
+@keyframes waveSurge2 {
+  from { transform: perspective(700px) rotateX(30deg) translate3d(5%, -4px, 0) scale(1.06); }
+  to   { transform: perspective(700px) rotateX(21deg) translate3d(-5%, 8px, 0) scale(1.14); }
+}
+@keyframes waveSurge3 {
+  from { transform: perspective(700px) rotateX(34deg) translate3d(-6%, 4px, 0); }
+  to   { transform: perspective(700px) rotateX(24deg) translate3d(6%, -6px, 0) scale(1.08); }
+}
+/* glass fields: you can see the water moving behind what you type */
+.feedback-layout .form-panel .field input,
+.feedback-layout .form-panel .field textarea,
+.query-form .query-field input,
+.query-form .query-field textarea {
+  background: rgba(255, 255, 255, .52);
+  backdrop-filter: blur(3px);
+  border: 1px solid rgba(255, 255, 255, .75);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9);
+  color: var(--dark);
+}
+.feedback-layout .form-panel .field input:focus,
+.feedback-layout .form-panel .field textarea:focus,
+.query-form .query-field input:focus,
+.query-form .query-field textarea:focus {
+  background: rgba(255, 255, 255, .82);
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 4px rgba(24, 169, 153, .18), inset 0 1px 0 rgba(255, 255, 255, .95);
+}
+.feedback-layout .form-panel .field > span,
+.feedback-layout .form-panel .rating-field legend,
+.query-form .query-field > span,
+.query-form .query-field { color: var(--dark); text-shadow: 0 1px 0 rgba(255, 255, 255, .6); }
+.feedback-layout .form-panel .section-heading > p:last-child,
+.feedback-layout .form-panel .form-note { color: rgba(18, 60, 69, .82); }
+.feedback-layout .form-panel .star { color: rgba(18, 60, 69, .28); }
+.feedback-layout .form-panel .star:hover, .feedback-layout .form-panel .star.active { color: #efb24d; }
+/* the submit control must stay solid on all that glass */
+.feedback-layout .form-panel .btn-wave, .query-form .btn-wave {
+  box-shadow: 0 6px 0 var(--primary-deep), 0 18px 32px -14px rgba(4, 42, 47, .75);
+}
+.feedback-layout .form-panel .success-toast, .query-form .success-toast {
+  background: rgba(255, 255, 255, .66);
+  border-color: rgba(23, 137, 123, .4);
+}
+
+/* ---------- 3. Comments carousel: obvious, and usable with no JS ---------- */
+.comments-section { padding-bottom: 84px; }
+.comments-track { min-height: 320px; perspective: 1400px; }
+.comment-card {
+  background: linear-gradient(150deg, rgba(255, 255, 255, .72), rgba(184, 227, 213, .5));
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, .8);
+  box-shadow: 0 26px 50px -26px rgba(4, 42, 47, .6), inset 0 1px 0 rgba(255, 255, 255, .95);
+  min-height: 320px;
+  transform: translate3d(22px, 0, -40px) rotateY(-5deg);
+}
+.comment-card.is-active {
+  transform: translate3d(0, 0, 0) rotateY(0deg);
+}
+.comment-card:not(.is-active) { opacity: 0; pointer-events: none; }
+/* no script yet: the first card is simply shown, so the section is never empty */
+.comments-viewer:not(.is-live) .comment-card:first-child { opacity: 1; pointer-events: auto; visibility: visible; }
+.comments-viewer:not(.is-live) .comment-card:not(:first-child) { display: none; }
+.comments-viewer:not(.is-live) .comment-dot { display: none; }
+.comments-viewer.is-live .comment-arrow, .comments-viewer.is-live .comment-dots { opacity: 1; }
+.comment-arrow { transition: transform var(--t-med) var(--ease-depth), background var(--t-fast) ease, color var(--t-fast) ease; }
+.comment-arrow:hover { transform: translateY(-2px) scale(1.08); }
+.comment-dots { gap: 10px; }
+.comment-dot { height: 9px; width: 9px; }
+.comment-dot.is-active { background: var(--primary); box-shadow: 0 0 12px rgba(11, 110, 105, .6); width: 28px; }
+.comments-count {
+  color: var(--muted);
+  font-family: var(--font-label);
+  font-size: .76rem;
+  letter-spacing: .1em;
+  margin: 18px 0 0;
+  text-align: center;
+  text-transform: uppercase;
+}
+.comments-cta {
+  align-items: center;
+  background: linear-gradient(120deg, rgba(11, 110, 105, .96), rgba(19, 74, 133, .9));
+  border: 1px solid rgba(184, 227, 213, .28);
+  border-radius: var(--radius-lg);
+  color: var(--white);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: space-between;
+  margin-top: 28px;
+  padding: 22px 26px;
+  position: relative;
+}
+.comments-cta p { color: rgba(255, 255, 255, .86); font-size: .95rem; margin: 0; }
+.comments-cta span { color: var(--mint); display: block; font-size: .66rem; letter-spacing: .22em; margin-bottom: 4px; text-transform: uppercase; }
+.comments-cta strong { color: var(--white); font-family: var(--font-heading); font-size: 1.28rem; }
+
+@media (max-width: 991.98px) {
+  .panel-sea img { opacity: .34; }
+  .query-form { padding: 26px 20px 28px; }
+  .ps-wave { height: 34%; bottom: -8%; }
+  .comments-cta { flex-direction: column; align-items: flex-start; }
+}
+@media (hover: none) and (pointer: coarse) {
+  /* all cards in a swipeable stack: a slider you can feel on a phone */
+  .comments-track { display: flex; gap: 16px; min-height: 0; overflow-x: auto; scroll-snap-type: x mandatory; }
+  .comment-card { flex: 0 0 86%; min-height: 0; opacity: 1 !important; pointer-events: auto; position: relative !important;
+                  transform: none !important; visibility: visible !important; scroll-snap-align: center; }
+  .comments-viewer:not(.is-live) .comment-card { display: block; }
+  .comments-controls { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel-sea img, .ps-wave { animation: none !important; transform: none; }
+  .feedback-layout .form-panel, .query-form { backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .panel-sea img { opacity: .3; }
+  .ps-wave-2 { bottom: 0; }
+  .ps-wave-3 { bottom: 0; }
+  .comment-card, .comment-arrow { transition: none; }
+}
